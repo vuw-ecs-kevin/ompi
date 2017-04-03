@@ -41,7 +41,7 @@
 # token is the name of the variable to define, and all remaining tokens
 # are the value.  For example:
 #
-# shell$ rpmbuild ... --define 'install_in_opt 1' ...
+# shell$ rpmbuild ... --define 'install_shell_scripts 1' ...
 #
 # Or (a multi-token example):
 #
@@ -49,11 +49,6 @@
 #    --define 'configure_options CFLAGS=-g --with-openib=/usr/local/ofed' ...
 #
 #############################################################################
-
-# Define this if you want to make this SRPM build in
-# /opt/NAME/VERSION-RELEASE instead of the default /usr/.
-# type: bool (0/1)
-%{!?install_in_opt: %define install_in_opt 0}
 
 # Define this if you want this RPM to install environment setup
 # shell scripts.
@@ -145,27 +140,6 @@
 # Configuration Logic
 #
 #############################################################################
-
-%if %{install_in_opt}
-%define _prefix /opt/%{name}/%{version}
-%define _sysconfdir /opt/%{name}/%{version}/etc
-%define _libdir /opt/%{name}/%{version}/lib
-%define _includedir /opt/%{name}/%{version}/include
-%define _mandir /opt/%{name}/%{version}/man
-# Note that the name "openmpi" is hard-coded in
-# opal/mca/installdirs/config for pkgdatadir; there is currently no
-# easy way to have OMPI change this directory name internally.  So we
-# just hard-code that name here as well (regardless of the value of
-# %{name} or %{_name}).
-%define _pkgdatadir /opt/%{name}/%{version}/share/openmpi
-# Per advice from Doug Ledford at Red Hat, docdir is supposed to be in
-# a fixed location.  But if you're installing a package in /opt, all
-# bets are off.  So feel free to install it anywhere in your tree.  He
-# suggests $prefix/doc.
-%define _defaultdocdir /opt/%{name}/%{version}/doc
-# Also put the modulefile in /opt.
-%define modulefile_path /opt/%{name}/%{version}/share/openmpi/modulefiles
-%endif
 
 %if !%{build_debuginfo_rpm}
 %define debug_package %{nil}
@@ -685,13 +659,6 @@ test "x$RPM_BUILD_ROOT" != "x" && rm -rf $RPM_BUILD_ROOT
 %if !%{sysconfdir_in_prefix}
 %{_sysconfdir}
 %endif
-# If %{install_in_opt}, then we're instaling OMPI to
-# /opt/openmpi/<version>.  But be sure to also explicitly mention
-# /opt/openmpi so that it can be removed by RPM when everything under
-# there is also removed.
-%if %{install_in_opt}
-%dir /opt/%{name}
-%endif
 # If we're installing the modulefile, get that, too
 %if %{install_modulefile}
 %{modulefile_path}
@@ -726,15 +693,6 @@ test "x$RPM_BUILD_ROOT" != "x" && rm -rf $RPM_BUILD_ROOT
 # If the sysconfdir is not under the prefix, then list it explicitly.
 %if !%{sysconfdir_in_prefix}
 %{_sysconfdir}
-%endif
-# If %{install_in_opt}, then we're instaling OMPI to
-# /opt/openmpi/<version>.  But be sure to also explicitly mention
-# /opt/openmpi so that it can be removed by RPM when everything under
-# there is also removed.  Also list /opt/openmpi/<version>/share so
-# that it can be removed as well.
-%if %{install_in_opt}
-%dir /opt/%{name}
-%dir /opt/%{name}/%{version}/share
 %endif
 # If we're installing the modulefile, get that, too
 %if %{install_modulefile}
