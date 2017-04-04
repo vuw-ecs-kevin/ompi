@@ -178,19 +178,22 @@
 #
 #############################################################################
 
+%{?scl:%scl_package openmpi}
+%{!?scl:%global pkg_name %{name}}
+
 Summary: A powerful implementation of MPI/SHMEM
-Name: %{?_name:%{_name}}%{!?_name:openmpi}
+Name: %{?scl_prefix}%{?_name:%{_name}}%{!?_name:openmpi}
 Version: $VERSION
 Release: 1%{?dist}
 License: BSD
 Group: Development/Libraries
-Source: openmpi-%{version}.tar.$EXTENSION
+Source: %{pkg_name}-%{version}.tar.$EXTENSION
 Packager: %{?_packager:%{_packager}}%{!?_packager:%{_vendor}}
 Vendor: %{?_vendorinfo:%{_vendorinfo}}%{!?_vendorinfo:%{_vendor}}
 Distribution: %{?_distribution:%{_distribution}}%{!?_distribution:%{_vendor}}
 Prefix: %{_prefix}
 Provides: mpi
-Provides: openmpi = %{version}
+Provides: %{pkg_name} = %{version}
 BuildRoot: /var/tmp/%{name}-%{version}-%{release}-root
 %if %{disable_auto_requires}
 AutoReq: no
@@ -268,7 +271,7 @@ Group: Development/Libraries
 %if %{disable_auto_requires}
 AutoReq: no
 %endif
-Provides: openmpi-devel = %{version}
+Provides: %{pkg_name}-devel = %{version}
 Requires: %{name}-runtime
 
 %description devel
@@ -299,7 +302,7 @@ Group: Development/Documentation
 %if %{disable_auto_requires}
 AutoReq: no
 %endif
-Provides: openmpi-docs = %{version}
+Provides: %{pkg_name}-docs = %{version}
 Requires: %{name}-runtime
 
 %description docs
@@ -328,7 +331,7 @@ This subpackage provides the documentation for Open MPI/OpenSHMEM.
 # there that are not meant to be packaged.
 rm -rf $RPM_BUILD_ROOT
 
-%setup -q -n openmpi-%{version}
+%setup -q -n %{pkg_name}-%{version}
 
 #############################################################################
 #
