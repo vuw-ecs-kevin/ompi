@@ -178,6 +178,8 @@
 #
 #############################################################################
 
+%global _scl_prefix /opt/OpenMPI
+
 %{?scl:%scl_package openmpi}
 %{!?scl:%global pkg_name %{name}}
 
